@@ -173,6 +173,10 @@ func (fs *FilerServer) CacheRemoteObjectToLocalCluster(ctx context.Context, req 
 
 	newEntry := entry.ShallowClone()
 	newEntry.Chunks = chunks
+	// If file has only one chunk, then set the chunk ETag to the ETag value from remote
+	if len(newEntry.Chunks) == 1 {
+		newEntry.Chunks[0].ETag = newEntry.Remote.RemoteETag
+	}
 	newEntry.Remote = proto.Clone(entry.Remote).(*filer_pb.RemoteEntry)
 	newEntry.Remote.LastLocalSyncTsNs = time.Now().UnixNano()
 
